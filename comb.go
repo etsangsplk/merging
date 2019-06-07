@@ -1,5 +1,9 @@
 package merging
 
+import (
+	"sort"
+)
+
 // CombSUM sums an item's score from all lists where it was present.
 type CombSUM struct {
 	Normaliser
@@ -15,12 +19,17 @@ func (c CombSUM) Merge(itemsLists []Items) Items {
 	seen := make(map[string]Item)
 	for _, items := range itemsLists {
 		for _, item := range items {
-			score := c.Normaliser(item, items)
 			if _, ok := seen[item.Id]; !ok {
-				item.Score = score
-				seen[item.Id] = item
+				seen[item.Id] = Item{
+					Id:    item.Id,
+					Score: item.Score,
+				}
 			} else {
-				item.Score++
+				s := seen[item.Id].Score
+				seen[item.Id] = Item{
+					Id:    item.Id,
+					Score: item.Score + s,
+				}
 			}
 		}
 	}
@@ -31,6 +40,15 @@ func (c CombSUM) Merge(itemsLists []Items) Items {
 		unique[i] = v
 		i++
 	}
+
+	c.Init(unique)
+	for i, item := range unique {
+		unique[i].Score = c.Normalise(item)
+	}
+
+	sort.Slice(unique, func(i, j int) bool {
+		return unique[i].Score > unique[j].Score
+	})
 
 	return unique
 }
@@ -61,6 +79,10 @@ func (c CombMNZ) Merge(itemsLists []Items) Items {
 	for _, item := range its {
 		item.Score *= k[item.Id]
 	}
+
+	sort.Slice(its, func(i, j int) bool {
+		return its[i].Score > its[j].Score
+	})
 
 	return its
 }

@@ -46,7 +46,6 @@ var (
 func TestCombSUM_MinMaxNorm(t *testing.T) {
 	c := CombSUM{Normaliser: MinMaxNorm}
 	it := c.Merge(itemsLists)
-	it.Sort()
 	ids := []string{"1", "2", "3", "4", "5", "12", "8", "6", "9", "10", "7"}
 	its := make([]string, len(ids))
 	for i, x := range it {
@@ -58,7 +57,6 @@ func TestCombSUM_MinMaxNorm(t *testing.T) {
 func TestCombMNZ_MinMaxNorm(t *testing.T) {
 	c := CombMNZ{Normaliser: MinMaxNorm}
 	it := c.Merge(itemsLists)
-	it.Sort()
 	ids := []string{"1", "2", "3", "4", "5", "12", "8", "6", "9", "10", "7"}
 	its := make([]string, len(ids))
 	for i, x := range it {
