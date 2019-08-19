@@ -6,15 +6,9 @@ import (
 
 // CombSUM sums an item's score from all lists where it was present.
 type CombSUM struct {
-	Normaliser
 }
 
 func (c CombSUM) Merge(itemsLists []Items) Items {
-	var (
-		unique Items
-		i      int
-	)
-
 	// Sum item scores from all the item lists where it is present.
 	seen := make(map[string]Item)
 	for _, items := range itemsLists {
@@ -35,32 +29,16 @@ func (c CombSUM) Merge(itemsLists []Items) Items {
 	}
 
 	// Create a flat slice from the unique items.
-	unique = make(Items, len(seen))
-	for _, v := range seen {
-		unique[i] = v
-		i++
-	}
-
-	c.Init(unique)
-	for i, item := range unique {
-		unique[i].Score = c.Normalise(item)
-	}
-
-	sort.Slice(unique, func(i, j int) bool {
-		return unique[i].Score > unique[j].Score
-	})
-
-	return unique
+	return flattenAndSort(seen)
 }
 
 // CombMNZ additionally multiplies the CombSUM score by the number of lists that contain that item.
 type CombMNZ struct {
-	Normaliser
 }
 
 func (c CombMNZ) Merge(itemsLists []Items) Items {
 	// Compute the CombSUM score for each item.
-	csum := CombSUM{Normaliser: c.Normaliser}
+	csum := CombSUM{}
 	its := csum.Merge(itemsLists)
 
 	// Then, record how many times each item appears in each of the lists of items.
