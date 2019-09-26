@@ -2,6 +2,7 @@ package merging
 
 import (
 	"github.com/hscells/trecresults"
+	"math"
 )
 
 // Item is an element in a list.
@@ -40,6 +41,47 @@ func (it Items) TRECResults(topic string) trecresults.ResultList {
 		})
 	}
 	return list
+}
+
+func (it Items) Max() float64 {
+	var max float64
+	for _, item := range it {
+		if item.Score > max {
+			max = item.Score
+		}
+	}
+	return max
+}
+
+func (it Items) Min() float64 {
+	min := math.MaxFloat64
+	for _, item := range it {
+		if item.Score < min {
+			min = item.Score
+		}
+	}
+	if min == math.MaxFloat64 {
+		return 0
+	}
+	return min
+}
+
+func (it Items) Cut(kappa float64) Items {
+	var items Items
+	for _, item := range it {
+		if item.Score >= kappa {
+			items = append(items, item)
+		}
+	}
+	return items
+}
+
+func (it Items) Sum() float64 {
+	var sum float64
+	for _, item := range it {
+		sum += item.Score
+	}
+	return sum
 }
 
 func FromTRECResults(list trecresults.ResultList) Items {
